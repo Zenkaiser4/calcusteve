@@ -19,7 +19,6 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 0.1
 
 # (list) Application requirements
-# comma separated e.g. requirements = sqlite3,kivy
 requirements = python3,kivy,kivymd,pillow
 
 # (str) Presplash of the application
@@ -48,28 +47,28 @@ osx.kivy_version = 2.3.0
 # (bool) Indicate if the application should be fullscreen or not
 fullscreen = 0
 
-# (int) Target Android API, should be as high as possible.
-android.api = 33
+# (int) Target Android API. Subimos a la 34 que es el estándar actual compatible.
+android.api = 34
 
 # (int) Minimum API your APK / AAB will support.
 android.minapi = 24
 
-# (str) Android NDK version to use
-android.ndk = 25c
+# (str) Android NDK version to use. Cambiado a la versión 27b (Evita que busque el sdkmanager antiguo)
+android.ndk = 27b
 
-# (int) Android NDK API to use. This is the minimum API your app will support, it should usually match android.minapi.
+# (int) Android NDK API to use. Debe coincidir habitualmente con minapi o ser superior.
 android.ndk_api = 24
 
 # (bool) If True, then automatically accept SDK license
 android.accept_sdk_license = True
 
-# (bool) Enable AndroidX support. ¡ACTIVADO PARA EVITAR CONFLICTOS CON KIVYMD!
+# (bool) Enable AndroidX support. ¡OBLIGATORIO PARA KIVYMD!
 android.enable_androidx = True
 
-# (list) The Android archs to build for, choices: armeabi-v7a, arm64-v8a, x86, x86_64
+# (list) The Android archs to build for
 android.archs = arm64-v8a, armeabi-v7a
 
-# (bool) enables Android auto backup feature (Android API >=23)
+# (bool) enables Android auto backup feature
 android.allow_backup = True
 
 #
@@ -88,7 +87,7 @@ ios.codesign.allowed = false
 
 [buildozer]
 
-# (int) Log level (0 = error only, 1 = info, 2 = debug (with command output))
+# (int) Log level (0 = error only, 1 = info, 2 = debug)
 log_level = 2
 
 # (int) Display warning if buildozer is run as root (0 = False, 1 = True)
