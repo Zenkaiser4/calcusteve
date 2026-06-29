@@ -21,34 +21,30 @@ jobs:
       - name: Install Android Build Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libffi-dev libsqlite3-dev tk-dev libgdbm-compat-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev
+          sudo apt install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libffi-dev libsqlite3-dev tk-dev libgdbm-compat-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libgomp1
 
       - name: Install Buildozer and Cython
         run: |
           python -m pip install --upgrade pip
-          pip install "cython<3.0.0" virtualenv buildozer
+          pip install cython virtualenv buildozer
 
-      # TRUCO MAESTRO: Creamos la carpeta interna de Buildozer antes de tiempo
-      # e instalamos las build-tools correctas en el sistema, enlazando 'aidl' directamente.
-      - name: Pre-install and link AIDL for Buildozer
+      # 🔥 EL VERDADERO TRUCO: Borramos el SDK conflictivo de GitHub Actions
+      # Esto obliga a Buildozer a descargar herramientas limpias y actualizadas automáticamente
+      - name: Clear Pre-installed Android SDK to avoid conflicts
         run: |
-          yes | ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager --licenses
-          ${ANDROID_HOME}/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.1" "platforms;android-33"
-          
-          # Creamos la ruta exacta que Buildozer busca desesperadamente
-          mkdir -p /home/runner/.buildozer/android/platform/android-sdk/build-tools/
-          
-          # Creamos un acceso directo de la carpeta de herramientas real hacia la carpeta de Buildozer
-          ln -s ${ANDROID_HOME}/build-tools/33.0.1 /home/runner/.buildozer/android/platform/android-sdk/build-tools/33.0.1
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /home/runner/.buildozer
 
       - name: Build APK
         env:
           APP_ALLOW_ROOT: "1"
-          BUILDOZER_ALLOW_KIVY_DEVELOP_BRANCH: "1"
-        run: buildozer -v android debug
+        run: |
+          buildozer android clean
+          buildozer -v android debug
 
+      # Cambiamos la ruta de subida a la carpeta estándar 'bin/' que es donde Buildozer deja el APK final
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: apk
-          path: .buildozer/android/platform/build-arm64-v8a_armeabi-v7a/dists/*/build/outputs/apk/debug/*.apk
+          name: calculadora-debug-apk
+          path: bin/*.apk
